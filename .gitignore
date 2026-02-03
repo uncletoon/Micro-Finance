@@ -12,9 +12,6 @@
 *.tmp
 *~
 .what
-account.controller.js
-accounts.js
-account.routes.js
 
 *.bak
 # Environment files (containing secrets, API keys, credentials)
