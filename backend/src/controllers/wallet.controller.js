@@ -1,5 +1,6 @@
 const wallets = require('../data/wallets');
 const { uuid } = require('uuidv4');
+const validator = require('validator')
 
 //create a wallet
 const createWallet = (req, res) => {
@@ -24,9 +25,12 @@ const createWallet = (req, res) => {
 
 // get user by the userID
 const getWalletByUserId = (req, res) => {
-    const { userId } = req.params;
-    
-    const wallet = wallets.find(u => u.userId === userId)
+    let { userId } = req.params;
+
+    userId = validator.toInt(userId);
+    const wallet = wallets.find(w => w.userId === userId);
+
+
     if (!wallet) {
         return res.status(404).json({
             message: "Account Not Found"
