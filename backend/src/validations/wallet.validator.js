@@ -3,7 +3,7 @@ const validator = require('validator')
 
 
 const walletValidator = (req, res, next) => {
-    let { userId, balance } = req.body;
+    let { userId, amount: balance } = req.body;
 
     //sinitize/cleanning.
     userId = validator.trim(String(userId ?? ""));
@@ -18,7 +18,7 @@ const walletValidator = (req, res, next) => {
 
     if (validator.isEmpty(balance)) {
         res.status(400).json({
-            message: "The balance must be provided"
+            message: "The amount must be provided"
         });
         return;
     }
@@ -31,7 +31,13 @@ const walletValidator = (req, res, next) => {
     }
     if (!validator.isNumeric(balance)) {
         res.status(400).json({
-            message: "The balance must be a Number"
+            message: "The amount must be a Number"
+        });
+        return;
+    }
+    if (balance < 0) {
+        res.status(400).json({
+            message: "Please, Deposit a Positive Money"
         });
         return;
     }
@@ -59,4 +65,102 @@ const walletValidator = (req, res, next) => {
 
 }
 
-module.exports = walletValidator;
+
+const depositValidator = (req, res, next) => {
+    const { id } = req.params;
+    let { amount: newBalance } = req.body;
+
+    //clean
+    newBalance = validator.trim(String(newBalance ?? ""));
+
+    //check empty
+    if (validator.isEmpty(newBalance) || newBalance === "0") {
+        res.status(400).json({
+            message: "The amount must be provided"
+        });
+        return;
+    }
+
+    // Validate
+    if (!validator.isNumeric(newBalance)) {
+        res.status(400).json({
+            message: "The amount must be a Number"
+        });
+        return;
+    }
+    if (newBalance < 0) {
+        res.status(400).json({
+            message: "The amount must be a Positive Number"
+        });
+        return;
+    }
+
+    //Convert
+    newBalance = validator.toFloat(newBalance);
+
+    const walletIndex = wallets.findIndex(w => w.id === id);
+    if (walletIndex === -1) {
+        return res.status(404).json({
+            message: "Account Not Found"
+        });
+    }
+    let initialBalance = wallets[walletIndex].balance;
+    let updatedBalance = initialBalance + newBalance;
+
+    balance = updatedBalance;
+    next();
+}
+
+
+const withdrawValidator = (req, res, next) => {
+    const { id } = req.params;
+    let { amount: newBalance } = req.body;
+
+    //clean
+    newBalance = validator.trim(String(newBalance ?? ""));
+
+    //check empty
+    if (validator.isEmpty(newBalance) || newBalance === "0") {
+        res.status(400).json({
+            message: "The amount must be provided"
+        });
+        return;
+    }
+
+    // Validate
+    if (!validator.isNumeric(newBalance)) {
+        res.status(400).json({
+            message: "The amount must be a Number"
+        });
+        return;
+    }
+    if (newBalance < 0) {
+        res.status(400).json({
+            message: "The amount must be a Positive Number"
+        });
+        return;
+    }
+
+    //Convert
+    newBalance = validator.toFloat(newBalance);
+
+    const walletIndex = wallets.findIndex(w => w.id === id);
+    if (walletIndex === -1) {
+        return res.status(404).json({
+            message: "Account Not Found"
+        });
+    }
+    let initialBalance = wallets[walletIndex].balance;
+    let updatedBalance = initialBalance - newBalance;
+
+    balance = updatedBalance;
+    next();
+
+
+}
+
+module.exports = {
+    walletValidator,
+    depositValidator,
+    withdrawValidator
+};
