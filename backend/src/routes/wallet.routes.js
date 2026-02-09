@@ -13,11 +13,13 @@ const {
     createWallet,
     getWalletByUserId,
     depositAmount,
-    withdrawAmount
+    withdrawAmount,
+    getAllUserWithWallet
 } = require('../controllers/wallet.controller');
 
 
 walletRoutes.post('/', walletValidator, createWallet);
+walletRoutes.get('/all', getAllUserWithWallet)
 walletRoutes.get('/:userId', getWalletByUserId);
 walletRoutes.patch('/:id/deposit', depositValidator, depositAmount);
 walletRoutes.patch('/:id/withdraw', withdrawValidator, withdrawAmount);

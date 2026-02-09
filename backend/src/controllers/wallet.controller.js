@@ -1,4 +1,6 @@
 const wallets = require('../data/wallets');
+const users = require("../data/users");
+
 const { uuid } = require('uuidv4');
 const validator = require('validator');
 
@@ -78,9 +80,28 @@ const withdrawAmount = (req, res) => {
     });
 }
 
+//Retrieve all user with wallet
+const getAllUserWithWallet = (req, res) => {
+    const result = users.map(user => {
+
+        const wallet = wallets.find(w => w.userId === user.userId)
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            userId: user.userId,
+            balance: wallet ? wallet.balance : 0
+        }
+    })
+    res.status(200).json({
+        user: result
+    })
+}
+
 module.exports = {
     createWallet,
     getWalletByUserId,
     depositAmount,
-    withdrawAmount
+    withdrawAmount,
+    getAllUserWithWallet,
 };
